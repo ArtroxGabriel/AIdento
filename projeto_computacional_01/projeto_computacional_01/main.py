@@ -20,10 +20,18 @@ cities: list[list[float]] =  [
     [25, 70, 45, 50, 5, 45, 20, 100, 25, 50, 35, 10, 90, 5, 0],
 ]
 
-path = [i for i in range(15)]
-
 g = Graph(cities)
-ac = AntColony(g)
-best_path = ac.fit(max_epochs=50)
-print(g.get_path_cost(best_path))
-print(best_path)
+
+
+# Solução via colônia de formigas
+
+ac = AntColony(g,
+               alpha = 1,
+               beta = 2,
+               ro = 0.6,
+               Q = 100)
+
+ac_best_path = ac.fit(max_epochs=10)
+
+print(f'Custo do melhor caminho dado pela C.F: {g.get_path_cost(ac_best_path)}\nCaminho dado pela C.F:')
+print(ac_best_path)
