@@ -9,8 +9,17 @@ class Graph:
         self.data = adj_matrix.copy()
         self.N = len(adj_matrix)
 
-    
-    def get_at(self, r_index: int, c_index: int) -> float:
+
+    def get_n(self) -> int:
+        return self.N
+
+
+    def get_at(self, r_index: int, c_index: int, safe: bool = False) -> float:
+        if not safe:
+            return self.data[r_index][c_index]
+        
+        if r_index == c_index:
+            return 1
         return self.data[r_index][c_index]
 
     

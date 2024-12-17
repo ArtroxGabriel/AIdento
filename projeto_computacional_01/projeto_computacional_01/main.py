@@ -1,4 +1,5 @@
 from graph import Graph
+from ant_colony import AntColony
 from random import shuffle
 
 cities: list[list[float]] =  [
@@ -22,4 +23,7 @@ cities: list[list[float]] =  [
 path = [i for i in range(15)]
 
 g = Graph(cities)
-print(g.get_path_cost(path))
+ac = AntColony(g)
+best_path = ac.fit(max_epochs=50)
+print(g.get_path_cost(best_path))
+print(best_path)
