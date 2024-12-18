@@ -4,13 +4,13 @@ from random import randint, choices
 class AntColony:
     def __init__(self, graph: Graph, alpha: int = 2, beta: int = 2, ro: float = 0.5, Q: float = 5, num_ants: int = 100) -> None:
         self.graph = graph
-        n = graph.get_n()
-        self.ants = [randint(0, n-1) for _ in range(num_ants)]
+        self.num_ants = num_ants
         self.alpha = alpha
         self.beta = beta
         self.pheromone_matrix = self.__generate_pheromone(self.graph.get_n())
         self.ro = ro
         self.Q = Q
+        self.loss = []
 
 
     def __generate_pheromone(self, size: int) -> list[list[int]]:
@@ -42,7 +42,7 @@ class AntColony:
                 for i in range(self.graph.get_n())]
 
 
-    def __update_pheromone_matrix(self, ant: int, distance: int, origin: int, destination: int) -> None:
+    def __update_pheromone_matrix(self, distance: int, origin: int, destination: int) -> None:
         """
         Método auxiliar para atualizar a matriz de feromônios
         """
@@ -58,9 +58,10 @@ class AntColony:
         Loop interno da colônia de formigas
         """
         ants_path = list()  # Inicializar os caminhos (uma matriz)
-        self.visited_matrix = self.__generate_visited_matrix(len(self.ants))  # Matriz que diz os vértices visitados
-
-        for idx, initial_pos in enumerate(self.ants):  # Pra cada formiga
+        ants = [randint(0, self.graph.get_n()-1) for _ in range(self.num_ants)]
+        self.visited_matrix = self.__generate_visited_matrix(self.num_ants)  # Matriz que diz os vértices visitados
+        
+        for idx, initial_pos in enumerate(ants):  # Pra cada formiga
             self.visited_matrix[idx][initial_pos] = 1
             current_ant_path = [initial_pos]  # Inicialize seu caminho
             current_pos = initial_pos
@@ -78,7 +79,7 @@ class AntColony:
                 
                 distance += self.graph.get_at(current_pos, next_pos)  # Atualizar o caminho
 
-                self.__update_pheromone_matrix(idx, distance, current_pos, next_pos)  # Atualizar os feromônios
+                self.__update_pheromone_matrix(distance, current_pos, next_pos)  # Atualizar os feromônios
                 current_pos = next_pos  # Atualiza a posição atual da formiga
 
                 current_ant_path.append(next_pos)  # Coloca a posição a ser visitada no caminho
@@ -97,6 +98,7 @@ class AntColony:
         for _ in range(max_epochs):
             paths = self.__fit_inside_loop()
             costs = [self.graph.get_path_cost(path) for path in paths]
+            self.loss.append(min(costs))
     
         min_cost = min(costs)
         min_cost_idx = costs.index(min_cost)

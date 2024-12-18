@@ -10,6 +10,7 @@ class GeneticAlgorithm:
         self.mut_rate = mut_rate
         self.cross_rate = cross_rate
         self.population = [self.__make_agent() for _ in range(self.pop_size)]
+        self.loss = []
 
 
     def __make_agent(self):
@@ -86,6 +87,7 @@ class GeneticAlgorithm:
                 best_agent = self.population[0][:]
             
             new_population.append(best_agent)
+            self.loss.append(best_distance)
             
             while len(new_population) < self.pop_size:
                 parent1 = self.__selection()
