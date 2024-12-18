@@ -24,7 +24,6 @@ class Genetic:
         # A random permutation of city indices
         individual = list(range(self.num_cities))
         random.shuffle(individual)
-        print(individual)
         return individual
 
 
@@ -39,7 +38,7 @@ class Genetic:
 
     def fitness(self, individual):
         dist = self.compute_route_distance(individual)
-        return 1.0 / dist if dist > 0 else float('inf')
+        return 1.0 / dist
 
 
     def initial_population(self):
