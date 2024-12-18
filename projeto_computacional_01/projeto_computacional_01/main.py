@@ -40,6 +40,19 @@ g = Graph(cities)
 if __name__ == "__main__":
     gen = Genetic(graph=g)
 
-    best_route, best_dist = gen.genetic_algorithm_tsp()
-    print("Best route found:", best_route)
-    print("Distance of best route:", best_dist)
+    ac = AntColony(g,
+                   alpha=1,
+                   beta=5,
+                   ro=0.6,
+                   Q=100)
+
+    gen_best_route, gen_best_dist = gen.genetic_algorithm_tsp()
+
+    print(f'Best route found (GEN): {gen_best_route}:')
+    print(f'Best distance found (GEN): {gen_best_dist}:')
+
+    ac_best_route = ac.fit(max_epochs=20)
+    ac_best_distance = g.get_path_cost(ac_best_route)
+
+    print(f'\nBest route found (AC): {ac_best_route}')
+    print(f'Best distance found (AC): {ac_best_distance}')

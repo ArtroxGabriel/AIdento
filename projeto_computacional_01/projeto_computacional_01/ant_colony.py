@@ -1,9 +1,11 @@
 from graph import Graph
+from random import randint, choices
 
 class AntColony:
-    def __init__(self, graph: Graph, alpha: int = 2, beta: int = 2, ro: float = 0.5, Q: float = 5) -> None:
+    def __init__(self, graph: Graph, alpha: int = 2, beta: int = 2, ro: float = 0.5, Q: float = 5, num_ants: int = 100) -> None:
         self.graph = graph
-        self.ants = [i for i in range(graph.get_n())]
+        n = graph.get_n()
+        self.ants = [randint(0, n-1) for _ in range(num_ants)]
         self.alpha = alpha
         self.beta = beta
         self.pheromone_matrix = self.__generate_pheromone(self.graph.get_n())
@@ -58,7 +60,7 @@ class AntColony:
         Loop interno da colônia de formigas
         """
         ants_path = list()  # Inicializar os caminhos (uma matriz)
-        self.visited_matrix = self.__generate_visited_matrix(self.graph.get_n())  # Matriz que diz os vértices visitados
+        self.visited_matrix = self.__generate_visited_matrix(len(self.ants))  # Matriz que diz os vértices visitados
 
         for idx, initial_pos in enumerate(self.ants):  # Pra cada formiga
             current_ant_path = [initial_pos]  # Inicialize seu caminho
@@ -67,14 +69,13 @@ class AntColony:
 
             while sum(self.visited_matrix[idx]) < self.graph.get_n():  # Enquanto ela não visitar todos os nós
                 travel_probabilities = self.__get_travel_probability(current_pos)  # Calcule as probabilidades
-                max_prob = max(travel_probabilities)  # Pegue o máximo
-                next_pos = travel_probabilities.index(max_prob)  # Índice do máximo
+                indexes = range(len(travel_probabilities))
+                next_pos = choices(indexes, weights=travel_probabilities, k=1)[0]  # Pegue uma posição baseada na sua probabilidade
 
                 # Enquanto o máximo não for um vértice novo
                 while self.visited_matrix[idx][next_pos]:
                     travel_probabilities[next_pos] = 0
-                    max_prob = max(travel_probabilities)
-                    next_pos = travel_probabilities.index(max_prob)
+                    next_pos = choices(indexes, weights=travel_probabilities, k=1)[0]
                 
                 distance += self.graph.get_at(current_pos, next_pos)  # Atualizar o caminho
 
@@ -84,6 +85,7 @@ class AntColony:
                 current_ant_path.append(next_pos)  # Coloca a posição a ser visitada no caminho
                 self.visited_matrix[idx][next_pos] = 1  # Diz que foi visitado
             
+            current_ant_path.append(initial_pos)
             ants_path.append(current_ant_path.copy())
         
         return ants_path

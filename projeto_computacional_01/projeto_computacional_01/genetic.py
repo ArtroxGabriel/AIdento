@@ -112,4 +112,7 @@ class Genetic:
             
             self.population = new_population
         
+        best_individual.append(best_individual[0])
+        best_distance = self.compute_route_distance(best_individual)
+
         return best_individual, best_distance

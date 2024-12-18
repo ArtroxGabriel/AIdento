@@ -39,8 +39,9 @@ class Graph:
         Método para dizer o custo total de um trajeto no grafo
         """
         cost = 0
+        path_len = len(path)
         
-        for index in range(self.N - 1):
+        for index in range(path_len - 1):
             current = path[index]
             prox = path[index + 1]
             cost += self.get_at(current, prox)
