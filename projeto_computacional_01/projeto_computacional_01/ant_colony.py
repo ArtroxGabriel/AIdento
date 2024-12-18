@@ -18,8 +18,6 @@ class AntColony:
         Método auxiliar para inicializar a matriz de feromônios
         """
         pheromone_matrix = [[1 for _ in range(size)] for _ in range(size)]
-        for i in range(size):
-            pheromone_matrix[i][i] = 0
         return pheromone_matrix
     
 
@@ -42,15 +40,28 @@ class AntColony:
                 for i in range(self.graph.get_n())]
 
 
-    def __update_pheromone_matrix(self, distance: int, origin: int, destination: int) -> None:
+    def __evaporate_pheromone_matrix(self) -> None:
+        """
+        Método auxiliar para evaporar os valores antigos da matriz
+        """
+        n = self.graph.get_n()
+        for i in range(n):
+            for j in range(n):
+                self.pheromone_matrix[i][j] *= (1 - self.ro)
+
+
+    def __update_pheromone_matrix(self, distances: list[int], ant_paths: list[list[int]]) -> None:
         """
         Método auxiliar para atualizar a matriz de feromônios
         """
-        # Evaporação
-        self.pheromone_matrix[origin][destination] *= (1 - self.ro)
 
-        # Adição
-        self.pheromone_matrix[origin][destination] += (self.Q)/(distance)
+        for idx in range(self.num_ants):
+            paths = ant_paths[idx]
+            distance = distances[idx]
+            for i in range(self.graph.get_n() - 1):
+                self.pheromone_matrix[paths[i]][paths[i+1]] += (self.Q)/distance
+        
+        self.__evaporate_pheromone_matrix()
 
 
     def __fit_inside_loop(self):
@@ -60,6 +71,7 @@ class AntColony:
         ants_path = list()  # Inicializar os caminhos (uma matriz)
         ants = [randint(0, self.graph.get_n()-1) for _ in range(self.num_ants)]
         self.visited_matrix = self.__generate_visited_matrix(self.num_ants)  # Matriz que diz os vértices visitados
+        distances = list()
         
         for idx, initial_pos in enumerate(ants):  # Pra cada formiga
             self.visited_matrix[idx][initial_pos] = 1
@@ -79,15 +91,18 @@ class AntColony:
                 
                 distance += self.graph.get_at(current_pos, next_pos)  # Atualizar o caminho
 
-                self.__update_pheromone_matrix(distance, current_pos, next_pos)  # Atualizar os feromônios
                 current_pos = next_pos  # Atualiza a posição atual da formiga
 
                 current_ant_path.append(next_pos)  # Coloca a posição a ser visitada no caminho
                 self.visited_matrix[idx][next_pos] = 1  # Diz que foi visitado
             
+            distances.append(distance)
             current_ant_path.append(initial_pos)
             ants_path.append(current_ant_path.copy())
-        
+
+        # Atualização global da matriz de feromônios
+        self.__update_pheromone_matrix(distances, ants_path)
+
         return ants_path
 
 
