@@ -1,7 +1,7 @@
 from graph import Graph
 from ant_colony import AntColony
-from random import shuffle
 from genetic import Genetic
+
 
 cities: list[list[float]] =  [
     [0, 10, 15, 45, 5, 45, 50, 44, 30, 100, 67, 33, 90, 17, 50],
@@ -23,23 +23,16 @@ cities: list[list[float]] =  [
 
 g = Graph(cities)
 
-
-# Solução via colônia de formigas
-
-# ac = AntColony(g,
-#                alpha = 1,
-#                beta = 2,
-#                ro = 0.6,
-#                Q = 100)
-#
-# ac_best_path = ac.fit(max_epochs=10)
-#
-# print(f'Custo do melhor caminho dado pela C.F: {g.get_path_cost(ac_best_path)}\nCaminho dado pela C.F:')
-# print(ac_best_path)
-
 if __name__ == "__main__":
-    gen = Genetic(graph=g)
+    gen_alg = Genetic(graph=g)
+    ant_col = AntColony(g, alpha = 1, beta = 2, ro = 0.6, Q = 100)
 
-    best_route, best_dist = gen.genetic_algorithm_tsp()
-    print("Best route found:", best_route)
-    print("Distance of best route:", best_dist)
+    best_route, best_dist = gen_alg.genetic_algorithm_tsp()
+    print("Best route found by G.A:", best_route)
+    print("Distance of best route by G.A:", best_dist)
+
+    print("\n")
+
+    ac_best_path = ant_col.fit(max_epochs=10)
+    print("Best route found by A.C:", ac_best_path)
+    print("Distance of best route by A.C:", g.get_path_cost(ac_best_path))
