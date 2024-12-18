@@ -1,7 +1,7 @@
 from graph import Graph
 from ant_colony import AntColony
 from random import shuffle
-from genetic import Genetic
+from gen_alg import GeneticAlgorithm
 
 cities: list[list[float]] =  [
     [0, 10, 15, 45, 5, 45, 50, 44, 30, 100, 67, 33, 90, 17, 50],
@@ -38,15 +38,18 @@ g = Graph(cities)
 # print(ac_best_path)
 
 if __name__ == "__main__":
-    gen = Genetic(graph=g)
+    gen = GeneticAlgorithm(graph=g,
+                            pop_size=1000)
 
     ac = AntColony(g,
                    alpha=1,
                    beta=5,
                    ro=0.6,
-                   Q=100)
+                   Q=100,
+                   num_ants=1000)
 
-    gen_best_route, gen_best_dist = gen.genetic_algorithm_tsp()
+    gen_best_route = gen.fit()
+    gen_best_dist = g.get_path_cost(gen_best_route)
 
     print(f'Best route found (GEN): {gen_best_route}:')
     print(f'Best distance found (GEN): {gen_best_dist}:')

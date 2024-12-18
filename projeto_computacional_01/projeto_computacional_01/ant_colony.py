@@ -28,8 +28,6 @@ class AntColony:
         Método auxiliar para inicializar a matriz de visitas
         """
         visited_matrix = [[0 for _ in range(size)] for _ in range(size)]
-        for i in range(size):
-            visited_matrix[i][i] = 1
         return visited_matrix
 
 
@@ -55,7 +53,7 @@ class AntColony:
         self.pheromone_matrix[origin][destination] += (self.Q)/(distance)
 
 
-    def fit_inside_loop(self):
+    def __fit_inside_loop(self):
         """
         Loop interno da colônia de formigas
         """
@@ -63,6 +61,7 @@ class AntColony:
         self.visited_matrix = self.__generate_visited_matrix(len(self.ants))  # Matriz que diz os vértices visitados
 
         for idx, initial_pos in enumerate(self.ants):  # Pra cada formiga
+            self.visited_matrix[idx][initial_pos] = 1
             current_ant_path = [initial_pos]  # Inicialize seu caminho
             current_pos = initial_pos
             distance = 0  # Inicialize sua distância
@@ -73,7 +72,7 @@ class AntColony:
                 next_pos = choices(indexes, weights=travel_probabilities, k=1)[0]  # Pegue uma posição baseada na sua probabilidade
 
                 # Enquanto o máximo não for um vértice novo
-                while self.visited_matrix[idx][next_pos]:
+                while self.visited_matrix[idx][next_pos] != 0:
                     travel_probabilities[next_pos] = 0
                     next_pos = choices(indexes, weights=travel_probabilities, k=1)[0]
                 
@@ -96,7 +95,7 @@ class AntColony:
         Loop externo da colônia de formigas
         """
         for _ in range(max_epochs):
-            paths = self.fit_inside_loop()
+            paths = self.__fit_inside_loop()
             costs = [self.graph.get_path_cost(path) for path in paths]
     
         min_cost = min(costs)
